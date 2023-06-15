@@ -1,5 +1,5 @@
 import { useState, useRef, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import AuthContext from "../store/auth-context";
 import {
   Button,
@@ -80,11 +80,11 @@ const SignupLogin = () => {
       })
       .then((data) => {
         console.log("Success");
-        authCtx.login(data.idToken);
-        history("/", { replace: true });
+        authCtx.login(data.idToken, enteredEmail);
+        history("/welcome");
       })
       .catch((err) => {
-        console.log(err.message);
+        alert(err.message);
       });
   };
 
@@ -119,7 +119,10 @@ const SignupLogin = () => {
               </Button>
             )}
           </Center>
-          <Center mt="4">{isLoading && <Spinner />}</Center>
+          <Center mt="4">
+            {isLogin && <NavLink>Forget Password </NavLink>}
+            {isLoading && <Spinner />}
+          </Center>
         </CardBody>
         <CardFooter>
           <Center>
