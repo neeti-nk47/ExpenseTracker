@@ -5,7 +5,6 @@ import {
   Button,
   Card,
   CardBody,
-  CardFooter,
   Center,
   FormControl,
   FormLabel,
@@ -20,6 +19,7 @@ const SignupLogin = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const [confirmPassword, setConfirmPassword] = useState("");
+
   function handleConfirmPasswordChange(event) {
     setConfirmPassword(event.target.value);
   }
@@ -117,14 +117,15 @@ const SignupLogin = () => {
             )}
           </Center>
           <Center mt="4">{isLoading && <Spinner />}</Center>
-          <Center mt="4">
-            {isLogin && <NavLink>Forget Password </NavLink>}
+          <Center>
+            {isLogin && (
+              <NavLink to="/ForgotPassword">Forget Password </NavLink>
+            )}
           </Center>
-        </CardBody>
-        <CardFooter>
           <Center>
             <Button
               size="sm"
+              mt="2"
               colorScheme="teal"
               variant="outline"
               onClick={switchAuthModeHandler}
@@ -132,7 +133,7 @@ const SignupLogin = () => {
               {isLogin ? "Create new account" : "Login with existing account"}
             </Button>
           </Center>
-        </CardFooter>
+        </CardBody>
       </Card>
     </Center>
   );

@@ -143,7 +143,7 @@ export default function CompleteProfile() {
           Update
         </Button>
         <Button m="3" colorScheme="green" onClick={verifyEmailHandler}>
-          {isVerified ? "Email Already Verified" : "Verify Email"}
+          {isVerified ? "Email Verified" : "Verify Email"}
         </Button>
       </Grid>
     </Center>
