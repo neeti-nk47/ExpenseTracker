@@ -1,12 +1,4 @@
-import {
-  Badge,
-  Button,
-  Flex,
-  HStack,
-  Heading,
-  Spacer,
-  Text,
-} from "@chakra-ui/react";
+import { Badge, Button, Flex, HStack, Heading, Spacer } from "@chakra-ui/react";
 import { useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import AuthContext from "../store/auth-context";
@@ -33,12 +25,9 @@ export default function NavBar() {
       <Heading as="h1">Welcome to Expense Tracker !!!</Heading>
       <Spacer />
       <HStack spacing="20px">
-        <Text>
-          Your profile is incomplete.
-          <Badge colorScheme="red">
-            <NavLink to="/welcome/CompleteProfile">Complete now</NavLink>
-          </Badge>
-        </Text>
+        <Badge colorScheme="red">
+          <NavLink to="/welcome/CompleteProfile">Complete Profile</NavLink>
+        </Badge>
 
         {authCtx.isLoggedIn && (
           <Button colorScheme="red" onClick={logoutHandler}>
