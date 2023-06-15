@@ -17,14 +17,12 @@ import {
 const SignupLogin = () => {
   const history = useNavigate();
 
+  const emailInputRef = useRef();
+  const passwordInputRef = useRef();
   const [confirmPassword, setConfirmPassword] = useState("");
-
   function handleConfirmPasswordChange(event) {
     setConfirmPassword(event.target.value);
   }
-
-  const emailInputRef = useRef();
-  const passwordInputRef = useRef();
 
   const authCtx = useContext(AuthContext);
 
@@ -111,7 +109,6 @@ const SignupLogin = () => {
               />
             </FormControl>
           )}
-
           <Center m="4">
             {!isLoading && (
               <Button colorScheme="blue" type="submit">
@@ -119,9 +116,9 @@ const SignupLogin = () => {
               </Button>
             )}
           </Center>
+          <Center mt="4">{isLoading && <Spinner />}</Center>
           <Center mt="4">
             {isLogin && <NavLink>Forget Password </NavLink>}
-            {isLoading && <Spinner />}
           </Center>
         </CardBody>
         <CardFooter>
