@@ -6,16 +6,50 @@ import {
   GridItem,
   Input,
 } from "@chakra-ui/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export default function CompleteProfile() {
   const nameInputRef = useRef();
   const photoInputRef = useRef();
+  const token = localStorage.getItem("Token");
+
+  useEffect(() => {
+    fetch(
+      "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyCW-VrFmh7dYoU7ptSpirixoA6CkYZq1Ss",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          idToken: token,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          return res.json().then((data) => {
+            let errorMessage = data.error.message;
+
+            throw new Error(errorMessage);
+          });
+        }
+      })
+      .then((data) => {
+        //console.log(data.users[0]);
+        nameInputRef.current.value = data.users[0].displayName;
+        photoInputRef.current.value = data.users[0].photoUrl;
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  });
 
   const buttonHandler = (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem("Token");
     const enteredName = nameInputRef.current.value;
     const enteredPhoto = photoInputRef.current.value;
 
@@ -46,10 +80,10 @@ export default function CompleteProfile() {
         }
       })
       .then((data) => {
-        console.log("Success", data);
+        console.log("Success");
       })
       .catch((err) => {
-        alert(err.message);
+        console.log(err.message);
       });
   };
 
