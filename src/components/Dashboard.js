@@ -13,7 +13,7 @@ import {
   ListItem,
   UnorderedList,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Dashboard() {
   const [items, setItems] = useState([]);
@@ -21,6 +21,11 @@ export default function Dashboard() {
   const [inputAmount, setInputAmount] = useState("");
   const [inputDesc, setInputDesc] = useState("");
   const [inputCategory, setInputCategory] = useState("");
+
+  let userEmail = localStorage
+    .getItem("Email")
+    .replace("@", "")
+    .replace(".", "");
 
   function handleInputChange1(event) {
     setInputAmount(event.target.value);
@@ -32,6 +37,30 @@ export default function Dashboard() {
     setInputCategory(event.target.value);
   }
 
+  //GET DATA FROM DATABASE-------------------------------------------------------------------------
+  const fetchHandler = useCallback(async (mailid) => {
+    const response = await fetch(
+      `https://login-signup-6427f-default-rtdb.firebaseio.com/Expenses/${mailid}.json`
+    );
+    const data = await response.json();
+
+    const loadedItems = [];
+    for (const key in data) {
+      loadedItems.push({
+        Amount: data[key].Amount,
+        Description: data[key].Description,
+        Category: data[key].Category,
+      });
+    }
+    console.log(loadedItems);
+    setItems(loadedItems);
+  }, []);
+
+  useEffect(() => {
+    fetchHandler(userEmail);
+  }, [fetchHandler, userEmail]);
+
+  //ADD EXPENSE TO LIST AND DB----------------------------------------------------------------------
   const addExpenseHandler = (e) => {
     e.preventDefault();
     const newItem = {
@@ -39,11 +68,34 @@ export default function Dashboard() {
       Description: inputDesc,
       Category: inputCategory,
     };
+    fetch(
+      `https://login-signup-6427f-default-rtdb.firebaseio.com/Expenses/${userEmail}.json`,
+      {
+        method: "POST",
+        body: JSON.stringify(newItem),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          return res.json().then((data) => {
+            let errorMessage = data.error.message;
 
-    setItems([...items, newItem]);
-    setInputAmount("");
-    setInputCategory("");
-    setInputDesc("");
+            throw new Error(errorMessage);
+          });
+        }
+      })
+      .then((data) => {
+        console.log(data);
+        setItems([...items, newItem]);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   };
 
   return (
