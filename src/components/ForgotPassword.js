@@ -48,7 +48,7 @@ export default function ForgotPassword() {
         }
       })
       .then((data) => {
-        console.log(data);
+        //console.log(data);
         history("/");
       })
       .catch((err) => {

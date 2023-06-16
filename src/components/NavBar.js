@@ -17,7 +17,8 @@ export default function NavBar() {
   return (
     <Flex
       as="nav"
-      p="5px"
+      p="10px"
+      bg="blue.100"
       borderBottom="1px solid grey"
       alignItems="center"
       gap="10px"
