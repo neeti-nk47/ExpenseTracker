@@ -11,7 +11,9 @@ import {
   Select,
   Button,
   ListItem,
-  UnorderedList,
+  List,
+  Flex,
+  Spacer,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -47,12 +49,13 @@ export default function Dashboard() {
     const loadedItems = [];
     for (const key in data) {
       loadedItems.push({
+        ID: key,
         Amount: data[key].Amount,
         Description: data[key].Description,
         Category: data[key].Category,
       });
     }
-    console.log(loadedItems);
+    //console.log(loadedItems);
     setItems(loadedItems);
   }, []);
 
@@ -91,11 +94,38 @@ export default function Dashboard() {
       })
       .then((data) => {
         console.log(data);
-        setItems([...items, newItem]);
+        // setItems([...items, newItem]);
+        setInputAmount("");
+        setInputDesc("");
+        setInputCategory("");
+        fetchHandler(userEmail);
       })
       .catch((err) => {
         console.log(err.message);
       });
+  };
+
+  //DELETE ACTION----------------------------------------------------------------------------
+  const deleteHandler = (obj) => {
+    fetch(
+      `https://login-signup-6427f-default-rtdb.firebaseio.com/Expenses/${userEmail}/${obj.ID}.json`,
+      {
+        method: "DELETE",
+      }
+    )
+      .then((res) => {
+        console.log(res.statusText);
+        fetchHandler(userEmail);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  //EDIT ACTION------------------------------------------------------------------------------
+  const editHandler = (obj) => {
+    setInputAmount(obj.Amount);
+    setInputCategory(obj.Category);
+    setInputDesc(obj.Description);
+    deleteHandler(obj);
   };
 
   return (
@@ -118,6 +148,7 @@ export default function Dashboard() {
                   placeholder="Enter Amount"
                   bg="white"
                   onChange={handleInputChange1}
+                  value={inputAmount}
                 />
               </GridItem>
               <GridItem colSpan="1" m="3">
@@ -129,6 +160,7 @@ export default function Dashboard() {
                   placeholder="Enter Description"
                   bg="white"
                   onChange={handleInputChange2}
+                  value={inputDesc}
                 />
               </GridItem>
               <GridItem colSpan="1" m="3">
@@ -138,6 +170,7 @@ export default function Dashboard() {
                 <Select
                   placeholder="Select Category"
                   onChange={handleInputChange3}
+                  value={inputCategory}
                 >
                   <option value="Fuel">Fuel</option>
                   <option value="Food">Food</option>
@@ -155,13 +188,22 @@ export default function Dashboard() {
         </Card>
       </Center>
       <Center>
-        <UnorderedList>
-          {items.map((item, index) => (
-            <ListItem key={index}>
-              {item.Amount}, {item.Description}, {item.Category}
+        <List>
+          {items.map((ele) => (
+            <ListItem m="2" key={ele.ID}>
+              <Flex alignItems="center" gap="10px">
+                {ele.Amount}, {ele.Category}, {ele.Description}
+                <Spacer />
+                <Button size="sm" onClick={() => editHandler(ele)}>
+                  EDIT
+                </Button>
+                <Button size="sm" onClick={() => deleteHandler(ele)}>
+                  DELETE
+                </Button>
+              </Flex>
             </ListItem>
           ))}
-        </UnorderedList>
+        </List>
       </Center>
     </>
   );
