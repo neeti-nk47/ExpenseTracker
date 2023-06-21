@@ -14,6 +14,7 @@ import {
   List,
   Flex,
   Spacer,
+  Text,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -57,6 +58,7 @@ export default function Dashboard() {
     }
     //console.log(loadedItems);
     setItems(loadedItems);
+    //items.map((ele) => setTotal(total + ele.Amount));
   }, []);
 
   useEffect(() => {
@@ -128,6 +130,10 @@ export default function Dashboard() {
     deleteHandler(obj);
   };
 
+  //-------------------------------------------------------------------------------------------
+  let total = 0;
+  items.map((ele) => (total = total + Number(ele.Amount)));
+
   return (
     <>
       <Center m="10">
@@ -188,22 +194,47 @@ export default function Dashboard() {
         </Card>
       </Center>
       <Center>
-        <List>
-          {items.map((ele) => (
-            <ListItem m="2" key={ele.ID}>
-              <Flex alignItems="center" gap="10px">
-                {ele.Amount}, {ele.Category}, {ele.Description}
-                <Spacer />
-                <Button size="sm" onClick={() => editHandler(ele)}>
-                  EDIT
-                </Button>
-                <Button size="sm" onClick={() => deleteHandler(ele)}>
-                  DELETE
-                </Button>
-              </Flex>
-            </ListItem>
-          ))}
-        </List>
+        <Card bg="blue.50" border="0.4px solid lightblue" width="600px" mb="10">
+          <CardHeader>
+            <Heading size="lg" textAlign="center">
+              Expense List
+            </Heading>
+          </CardHeader>
+          <CardBody>
+            <List>
+              {items.map((ele) => (
+                <ListItem m="2" key={ele.ID} bg="white">
+                  <Flex gap="2" p="1" border="0.4px solid lightblue">
+                    <Text>
+                      Rs. {ele.Amount}, {ele.Category}: {ele.Description}
+                    </Text>
+                    <Spacer />
+                    <Button
+                      size="sm"
+                      colorScheme="teal"
+                      onClick={() => editHandler(ele)}
+                    >
+                      EDIT
+                    </Button>
+                    <Button
+                      size="sm"
+                      colorScheme="red"
+                      onClick={() => deleteHandler(ele)}
+                    >
+                      DELETE
+                    </Button>
+                  </Flex>
+                </ListItem>
+              ))}
+            </List>
+          </CardBody>
+          <Center mb="5" p="1">
+            <Text p="1" border="0.4px solid lightblue">
+              Total Expense : Rs. {total}
+            </Text>
+          </Center>
+          {total > 10000 && <Button colorScheme="red">Activate Premium</Button>}
+        </Card>
       </Center>
     </>
   );
