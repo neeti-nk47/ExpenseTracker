@@ -15,11 +15,17 @@ import {
   Flex,
   Spacer,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 
 export default function Dashboard() {
+  const [pre, setPre] = useState(false);
+
   const [items, setItems] = useState([]);
+
+  const bg = useColorModeValue("blue.50", "blue.700");
+  const bglist = useColorModeValue("white", "grey.700");
 
   const [inputAmount, setInputAmount] = useState("");
   const [inputDesc, setInputDesc] = useState("");
@@ -131,13 +137,29 @@ export default function Dashboard() {
   };
 
   //-------------------------------------------------------------------------------------------
+
+  const makeCSV = (rows) => rows.map((r) => r.join(",")).join("\n");
+
+  let data = [["Amount", "Category", "Description"]];
+
   let total = 0;
-  items.map((ele) => (total = total + Number(ele.Amount)));
+  items.forEach((ele) => {
+    total = total + Number(ele.Amount);
+    data.push([ele.Amount, ele.Category, ele.Description]);
+  });
+
+  let blob = new Blob([makeCSV(data)]);
+
+  //ACTIVATE PREMIUM-------------------------------------------------------------------------
+  const premiumHandler = () => {
+    localStorage.setItem("IsPremium", true);
+    setPre(true);
+  };
 
   return (
     <>
       <Center m="10">
-        <Card bg="blue.50" border="0.4px solid lightblue">
+        <Card bg={bg} border="0.4px solid lightblue">
           <CardHeader>
             <Heading size="lg" textAlign="center">
               Enter Your Expenses
@@ -152,7 +174,7 @@ export default function Dashboard() {
                 <Input
                   type="number"
                   placeholder="Enter Amount"
-                  bg="white"
+                  bg={bglist}
                   onChange={handleInputChange1}
                   value={inputAmount}
                 />
@@ -164,7 +186,7 @@ export default function Dashboard() {
                 <Input
                   type="text"
                   placeholder="Enter Description"
-                  bg="white"
+                  bg={bglist}
                   onChange={handleInputChange2}
                   value={inputDesc}
                 />
@@ -172,9 +194,10 @@ export default function Dashboard() {
               <GridItem colSpan="1" m="3">
                 <FormLabel textAlign="center">Category</FormLabel>
               </GridItem>
-              <GridItem colSpan="2" m="3" bg="white">
+              <GridItem colSpan="2" m="3" bg={bglist}>
                 <Select
                   placeholder="Select Category"
+                  bg={bglist}
                   onChange={handleInputChange3}
                   value={inputCategory}
                 >
@@ -194,7 +217,7 @@ export default function Dashboard() {
         </Card>
       </Center>
       <Center>
-        <Card bg="blue.50" border="0.4px solid lightblue" width="600px" mb="10">
+        <Card bg={bg} border="0.4px solid lightblue" width="600px" mb="10">
           <CardHeader>
             <Heading size="lg" textAlign="center">
               Expense List
@@ -203,7 +226,7 @@ export default function Dashboard() {
           <CardBody>
             <List>
               {items.map((ele) => (
-                <ListItem m="2" key={ele.ID} bg="white">
+                <ListItem m="2" key={ele.ID} bg={bglist}>
                   <Flex gap="2" p="1" border="0.4px solid lightblue">
                     <Text>
                       Rs. {ele.Amount}, {ele.Category}: {ele.Description}
@@ -228,12 +251,25 @@ export default function Dashboard() {
               ))}
             </List>
           </CardBody>
-          <Center mb="5" p="1">
+          <Center p="1">
             <Text p="1" border="0.4px solid lightblue">
               Total Expense : Rs. {total}
             </Text>
           </Center>
-          {total > 10000 && <Button colorScheme="red">Activate Premium</Button>}
+
+          {pre && (
+            <Center m="3">
+              <a href={URL.createObjectURL(blob)} download="expenselist.csv">
+                Download Expenses
+              </a>
+            </Center>
+          )}
+
+          {total > 10000 && (
+            <Button colorScheme="red" onClick={premiumHandler}>
+              {pre ? "Premium Activated" : "Activate Premium"}
+            </Button>
+          )}
         </Card>
       </Center>
     </>

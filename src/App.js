@@ -4,10 +4,13 @@ import Layout from "./components/Layout";
 import Dashboard from "./components/Dashboard";
 import CompleteProfile from "./components/CompleteProfile";
 import ForgotPassword from "./components/ForgotPassword";
+import { ColorModeScript } from "@chakra-ui/react";
+import theme from "./components/theme";
 
 function App() {
   return (
     <>
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
       <Routes>
         <Route path="/" element={<SignupLogin />} />
         <Route path="/ForgotPassword" element={<ForgotPassword />} />
